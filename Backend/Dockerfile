@@ -1,12 +1,13 @@
+FROM eclipse-temurin:17-jdk-alpine AS build
+
+WORKDIR /app
+COPY . .
+RUN ./mvnw clean package -DskipTests
+
 FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 
-# Copiar el JAR construido
-COPY target/*.jar app.jar
-
-# Puerto que expone Spring Boot
 EXPOSE 8080
-
-# Comando para ejecutar la app
 ENTRYPOINT ["java", "-jar", "app.jar"]
