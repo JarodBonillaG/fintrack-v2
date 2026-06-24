@@ -4,10 +4,7 @@
 !example.env
 
 # Backend
-backend/target/
-backend/.mvn/
-backend/mvnw
-backend/mvnw.cmd
+Backend/target/
 
 # Frontend
 frontend/node_modules/
