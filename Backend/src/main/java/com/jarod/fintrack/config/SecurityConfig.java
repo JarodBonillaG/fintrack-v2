@@ -16,6 +16,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -56,7 +58,10 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.addAllowedOrigin("http://localhost:5173");
+                    config.setAllowedOrigins(List.of(
+                            "http://localhost:5173",
+                            "https://fintrack-v2-lake.vercel.app"
+                    ));
                     config.addAllowedHeader("*");
                     config.addAllowedMethod("*");
                     config.setAllowCredentials(true);
