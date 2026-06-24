@@ -73,6 +73,13 @@ public class TransaccionService {
         t.setEsRecurrente(dto.isEsRecurrente());
         t.setFrecuencia(dto.getFrecuencia());
 
+        if (dto.getTipo() == transaccion.TipoTransaccion.GASTO) {
+            c.setBalance(c.getBalance().subtract(dto.getMonto()));
+        } else {
+            c.setBalance(c.getBalance().add(dto.getMonto()));
+        }
+        cuentaRepository.save(c);
+
         return toDTO(transaccionRepository.save(t));
     }
 
@@ -88,6 +95,21 @@ public class TransaccionService {
         categoria cat = categoriaRepository.findById(dto.getCategoriaId())
                 .filter(x -> x.getUsuario().getEmail().equals(email))
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+
+        cuenta cuentaAnterior = t.getCuenta();
+        if (t.getTipo() == transaccion.TipoTransaccion.GASTO) {
+            cuentaAnterior.setBalance(cuentaAnterior.getBalance().add(t.getMonto()));
+        } else {
+            cuentaAnterior.setBalance(cuentaAnterior.getBalance().subtract(t.getMonto()));
+        }
+        cuentaRepository.save(cuentaAnterior);
+
+        if (dto.getTipo() == transaccion.TipoTransaccion.GASTO) {
+            c.setBalance(c.getBalance().subtract(dto.getMonto()));
+        } else {
+            c.setBalance(c.getBalance().add(dto.getMonto()));
+        }
+        cuentaRepository.save(c);
 
         t.setCuenta(c);
         t.setCategoria(cat);
@@ -105,6 +127,13 @@ public class TransaccionService {
         transaccion t = transaccionRepository.findById(id)
                 .filter(x -> x.getCuenta().getUsuario().getEmail().equals(email))
                 .orElseThrow(() -> new RuntimeException("Transacción no encontrada"));
+        cuenta c = t.getCuenta();
+        if (t.getTipo() == transaccion.TipoTransaccion.GASTO) {
+            c.setBalance(c.getBalance().add(t.getMonto()));
+        } else {
+            c.setBalance(c.getBalance().subtract(t.getMonto()));
+        }
+        cuentaRepository.save(c);
         transaccionRepository.delete(t);
     }
 }

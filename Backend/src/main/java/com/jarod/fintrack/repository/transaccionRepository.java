@@ -1,5 +1,6 @@
 package com.jarod.fintrack.repository;
 
+import com.jarod.fintrack.entity.cuenta;
 import com.jarod.fintrack.entity.transaccion;
 import com.jarod.fintrack.entity.usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,5 @@ public interface transaccionRepository extends JpaRepository<transaccion, UUID> 
             @Param("desde") LocalDate desde,
             @Param("hasta") LocalDate hasta
     );
+    void deleteByCuenta(cuenta cuenta);
 }

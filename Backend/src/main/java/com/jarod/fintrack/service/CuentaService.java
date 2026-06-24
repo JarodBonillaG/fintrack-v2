@@ -4,10 +4,12 @@ import com.jarod.fintrack.dto.CuentaDTO;
 import com.jarod.fintrack.entity.cuenta;
 import com.jarod.fintrack.entity.usuario;
 import com.jarod.fintrack.repository.cuentaRepository;
+import com.jarod.fintrack.repository.transaccionRepository;
 import com.jarod.fintrack.repository.usuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +20,7 @@ public class CuentaService {
 
     private final cuentaRepository cuentaRepository;
     private final usuarioRepository usuarioRepository;
+    private final transaccionRepository transaccionRepository;
 
     private usuario obtenerUsuario(String email) {
         return usuarioRepository.findByEmail(email)
@@ -54,11 +57,12 @@ public class CuentaService {
         c.setBalance(dto.getBalance());
         return toDTO(cuentaRepository.save(c));
     }
-
+    @Transactional
     public void eliminar(String email, UUID id) {
         cuenta c = cuentaRepository.findById(id)
                 .filter(x -> x.getUsuario().getEmail().equals(email))
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
+        transaccionRepository.deleteByCuenta(c);
         cuentaRepository.delete(c);
     }
 }
