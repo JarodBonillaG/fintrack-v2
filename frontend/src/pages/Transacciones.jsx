@@ -166,6 +166,10 @@ function Transacciones() {
                                         className="bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded-lg transition font-semibold">
                                     Agregar
                                 </button>
+                                <button type="button" onClick={() => setMostrarForm(false)}
+                                        className="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg transition">
+                                    Cancelar
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -180,9 +184,7 @@ function Transacciones() {
                                 <select className={inputClass} value={formEdit.cuentaId}
                                         onChange={e => setFormEdit({...formEdit, cuentaId: e.target.value})} required>
                                     <option value="">Seleccioná cuenta</option>
-                                    {categorias
-                                        .filter(c => c.tipo === formEdit.tipo)
-                                        .map(c => <option key={c.id} value={c.id}>{c.icono} {c.nombre}</option>)}
+                                    {cuentas.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
                                 </select>
                             </div>
                             <div>
@@ -190,7 +192,9 @@ function Transacciones() {
                                 <select className={inputClass} value={formEdit.categoriaId}
                                         onChange={e => setFormEdit({...formEdit, categoriaId: e.target.value})} required>
                                     <option value="">Seleccioná categoría</option>
-                                    {categorias.map(c => <option key={c.id} value={c.id}>{c.icono} {c.nombre}</option>)}
+                                    {categorias
+                                    .filter(c => c.tipo === formEdit.tipo)
+                                    .map(c => <option key={c.id} value={c.id}>{c.icono} {c.nombre}</option>)}
                                 </select>
                             </div>
                             <div>

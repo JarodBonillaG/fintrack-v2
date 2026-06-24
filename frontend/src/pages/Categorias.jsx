@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import api from '../api/api'
 import Navbar from '../components/Navbar'
-import { Plus, Tag } from 'lucide-react'
+import { Plus, Tag, Trash2, Pencil  } from 'lucide-react'
 
 const ICONOS = [
     { emoji: '🍔', label: 'Comida' },
@@ -42,6 +42,12 @@ function Categorias() {
         setCategorias(res.data)
         setForm({ nombre: '', tipo: 'GASTO', icono: '🍔' })
         setMostrarForm(false)
+    }
+
+    const eliminar = async (id) => {
+        await api.delete(`/api/categorias/${id}`)
+        const res = await api.get('/api/categorias')
+        setCategorias(res.data)
     }
 
     const inputClass = "w-full bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -103,12 +109,18 @@ function Categorias() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {categorias.length === 0 && <p className="text-gray-400">No hay categorías todavía.</p>}
                     {categorias.map(c => (
-                        <div key={c.id} className="bg-gray-900 rounded-xl px-5 py-4 flex items-center gap-4">
-                            <div className="bg-gray-800 rounded-lg p-3 text-2xl">{c.icono}</div>
-                            <div>
-                                <p className="font-semibold">{c.nombre}</p>
-                                <p className="text-sm text-gray-400">{c.tipo}</p>
+                        <div key={c.id} className="bg-gray-900 rounded-xl px-5 py-4 flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                                <div className="bg-gray-800 rounded-lg p-3 text-2xl">{c.icono}</div>
+                                <div>
+                                    <p className="font-semibold">{c.nombre}</p>
+                                    <p className="text-sm text-gray-400">{c.tipo}</p>
+                                </div>
                             </div>
+                            <button onClick={() => eliminar(c.id)}
+                                    className="text-red-400 hover:text-red-300 transition">
+                                <Trash2 size={18} />
+                            </button>
                         </div>
                     ))}
                 </div>

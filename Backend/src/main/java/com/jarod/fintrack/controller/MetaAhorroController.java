@@ -25,6 +25,13 @@ public class MetaAhorroController {
         return ResponseEntity.ok(metaAhorroService.listar(userDetails.getUsername()));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@AuthenticationPrincipal UserDetails userDetails,
+                                         @PathVariable UUID id) {
+        metaAhorroService.eliminar(userDetails.getUsername(), id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping
     public ResponseEntity<MetaAhorroDTO> crear(@AuthenticationPrincipal UserDetails userDetails,
                                                @Valid @RequestBody MetaAhorroDTO dto) {
@@ -34,7 +41,8 @@ public class MetaAhorroController {
     @PutMapping("/{id}/aporte")
     public ResponseEntity<MetaAhorroDTO> aporte(@AuthenticationPrincipal UserDetails userDetails,
                                                 @PathVariable UUID id,
-                                                @RequestParam BigDecimal monto) {
-        return ResponseEntity.ok(metaAhorroService.aporte(userDetails.getUsername(), id, monto));
+                                                @RequestParam BigDecimal monto,
+                                                @RequestParam UUID cuentaId) {
+        return ResponseEntity.ok(metaAhorroService.aporte(userDetails.getUsername(), id, monto, cuentaId));
     }
 }

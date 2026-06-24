@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react'
 import api from '../api/api'
 import Navbar from '../components/Navbar'
-import { Target, Plus, TrendingUp, Calendar, DollarSign, AlertCircle } from 'lucide-react'
+import { Target, Plus, TrendingUp, Calendar, DollarSign, AlertCircle, Trash } from 'lucide-react'
 
 function Metas() {
     const [metas, setMetas] = useState([])
     const [form, setForm] = useState({ nombre: '', montoObjetivo: '', fechaLimite: '' })
-    const [aporte, setAporte] = useState({ id: '', monto: '' })
+    const [aporte, setAporte] = useState({ id: '', monto: '', cuentaId: '' })
     const [showNuevaMeta, setShowNuevaMeta] = useState(false)
+    const [deleteId, setDeleteId] = useState(null)
+    const [cuentas, setCuentas] = useState([])
 
     useEffect(() => {
         cargarMetas()
+        api.get('/api/cuentas').then(res => setCuentas(res.data))
     }, [])
 
     const cargarMetas = async () => {
@@ -36,9 +39,14 @@ function Metas() {
 
     const handleAporte = async (e) => {
         e.preventDefault()
-        await api.put(`/api/metas/${aporte.id}/aporte?monto=${aporte.monto}`)
+        await api.put(`/api/metas/${aporte.id}/aporte?monto=${aporte.monto}&cuentaId=${aporte.cuentaId}`)
         await cargarMetas()
-        setAporte({ id: '', monto: '' })
+        setAporte({ id: '', monto: '', cuentaId: '' })
+    }
+
+    const handleDelete = async (id) => {
+        await api.delete(`/api/metas/${id}`)
+        await cargarMetas()
     }
 
     const calcularProgreso = (actual, objetivo) => {
@@ -89,7 +97,6 @@ function Metas() {
                     </div>
                 </div>
 
-                {/* Formulario nueva meta */}
                 {showNuevaMeta && (
                     <div className="bg-gray-800 rounded-xl p-6 mb-8 border border-gray-700">
                         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -149,7 +156,30 @@ function Metas() {
                     </div>
                 )}
 
-                {/* Lista de metas */}
+                {deleteId && (
+                    <div className="bg-gray-800 rounded-xl p-8 text-center text-gray-400 mb-8 border border-gray-700">
+                        <AlertCircle size={48} className="mx-auto mb-3 opacity-50" />
+                        <p>¿Estás seguro que querés eliminar esta meta?</p>
+                        <div className="flex justify-center gap-3 mt-4">
+                            <button
+                                onClick={() => {
+                                    handleDelete(deleteId)
+                                    setDeleteId(null)
+                                }}
+                                className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg transition"
+                            >
+                                Eliminar
+                            </button>
+                            <button
+                                onClick={() => setDeleteId(null)}
+                                className="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg transition"
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 <h2 className="text-xl font-semibold mb-4">Mis Metas</h2>
                 <div className="grid grid-cols-1 gap-4">
                     {metas.length === 0 && (
@@ -178,6 +208,12 @@ function Metas() {
                                                     ✅ Completada
                                                 </span>
                                             )}
+                                            <button
+                                                onClick={() => setDeleteId(m.id)}
+                                                className="ml-auto text-red-400 hover:text-red-300 transition"
+                                            >
+                                                <Trash size={18} />
+                                            </button>
                                         </div>
 
                                         <div className="flex flex-wrap gap-4 text-sm text-gray-400">
@@ -197,7 +233,6 @@ function Metas() {
                                             </span>
                                         </div>
 
-                                        {/* Barra de progreso */}
                                         <div className="mt-3 w-full bg-gray-700 rounded-full h-2">
                                             <div
                                                 className={`h-2 rounded-full transition-all duration-500 ${
@@ -208,24 +243,35 @@ function Metas() {
                                         </div>
                                     </div>
 
-                                    {/* Formulario de aporte */}
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="number"
-                                            placeholder="Monto"
-                                            value={aporte.id === m.id ? aporte.monto : ''}
-                                            onChange={e => {
-                                                setAporte({ id: m.id, monto: e.target.value })
-                                            }}
-                                            className="w-28 bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-emerald-500"
-                                        />
-                                        <button
-                                            onClick={handleAporte}
-                                            disabled={!aporte.monto || aporte.id !== m.id}
-                                            className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-1.5 rounded-lg text-sm transition"
+                                    <div className="flex flex-col gap-2">
+                                        <select
+                                            value={aporte.id === m.id ? aporte.cuentaId : ''}
+                                            onChange={e => setAporte({ ...aporte, id: m.id, cuentaId: e.target.value })}
+                                            className="w-40 bg-gray-900 border border-gray-700 rounded-lg px-2 py-1.5 text-sm text-white focus:outline-none focus:border-emerald-500"
                                         >
-                                            Aportar
-                                        </button>
+                                            <option value="">Cuenta</option>
+                                            {cuentas.map(c => (
+                                                <option key={c.id} value={c.id}>{c.nombre}</option>
+                                            ))}
+                                        </select>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="number"
+                                                placeholder="Monto"
+                                                value={aporte.id === m.id ? aporte.monto : ''}
+                                                onChange={e => {
+                                                    setAporte({ ...aporte, id: m.id, monto: e.target.value })
+                                                }}
+                                                className="w-28 bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+                                            />
+                                            <button
+                                                onClick={handleAporte}
+                                                disabled={!aporte.monto || !aporte.cuentaId || aporte.id !== m.id}
+                                                className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-1.5 rounded-lg text-sm transition"
+                                            >
+                                                Aportar
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
