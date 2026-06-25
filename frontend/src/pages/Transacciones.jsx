@@ -21,6 +21,8 @@ function Transacciones() {
     const hoy = new Date()
     const [mes, setMes] = useState(hoy.getMonth() + 1)
     const [anio, setAnio] = useState(hoy.getFullYear())
+    const [filtroTipo, setFiltroTipo] = useState('TODOS')
+    const [filtroCategoriaId, setFiltroCategoriaId] = useState('')
 
     const fetchTransacciones = (m, a) => {
         const desde = `${a}-${String(m).padStart(2, '0')}-01`
@@ -96,28 +98,37 @@ function Transacciones() {
     const inputClass = "w-full bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
     const labelClass = "text-sm text-gray-400 mb-1 block"
 
-    const totalGastos = transacciones.filter(t => t.tipo === 'GASTO').reduce((sum, t) => sum + parseFloat(t.monto), 0)
-    const totalIngresos = transacciones.filter(t => t.tipo === 'INGRESO').reduce((sum, t) => sum + parseFloat(t.monto), 0)
+    const transaccionesFiltradas = transacciones.filter(t => {
+        const pasaTipo = filtroTipo === 'TODOS' || t.tipo === filtroTipo
+        const pasaCategoria = !filtroCategoriaId || t.categoriaId === filtroCategoriaId
+        return pasaTipo && pasaCategoria
+    })
+
+    const totalGastos = transaccionesFiltradas.filter(t => t.tipo === 'GASTO').reduce((sum, t) => sum + parseFloat(t.monto), 0)
+    const totalIngresos = transaccionesFiltradas.filter(t => t.tipo === 'INGRESO').reduce((sum, t) => sum + parseFloat(t.monto), 0)
 
     return (
         <div className="min-h-screen bg-gray-950 text-white">
             <Navbar />
-            <div className="max-w-5xl mx-auto px-6 py-8">
-                <div className="flex items-center justify-between mb-8">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6 sm:mb-8 gap-3">
                     <div>
-                        <h1 className="text-3xl font-bold">Transacciones</h1>
-                        <p className="text-gray-400">Historial de movimientos</p>
+                        <h1 className="text-2xl sm:text-3xl font-bold">Transacciones</h1>
+                        <p className="text-sm sm:text-base text-gray-400">Historial de movimientos</p>
                     </div>
                     <button
                         onClick={() => setMostrarForm(!mostrarForm)}
-                        className="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-lg flex items-center gap-2 transition"
+                        className="bg-emerald-600 hover:bg-emerald-700 px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 transition text-sm sm:text-base shrink-0"
                     >
                         <Plus size={18} /> Nueva
                     </button>
                 </div>
 
+                {/* Form Nueva */}
                 {mostrarForm && (
-                    <div className="bg-gray-900 rounded-2xl p-6 mb-8">
+                    <div className="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
                         <h2 className="text-lg font-semibold mb-4">Nueva transacción</h2>
                         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -161,13 +172,13 @@ function Transacciones() {
                                 <input type="text" className={inputClass} placeholder="Opcional"
                                        value={form.descripcion} onChange={e => setForm({...form, descripcion: e.target.value})} />
                             </div>
-                            <div className="md:col-span-2">
+                            <div className="md:col-span-2 flex gap-3">
                                 <button type="submit"
                                         className="bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded-lg transition font-semibold">
                                     Agregar
                                 </button>
                                 <button type="button" onClick={() => setMostrarForm(false)}
-                                        className="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg transition">
+                                        className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg transition">
                                     Cancelar
                                 </button>
                             </div>
@@ -175,8 +186,9 @@ function Transacciones() {
                     </div>
                 )}
 
+                {/* Form Editar */}
                 {editando && (
-                    <div className="bg-gray-900 rounded-2xl p-6 mb-8">
+                    <div className="bg-gray-900 rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
                         <h2 className="text-lg font-semibold mb-4">Editar transacción</h2>
                         <form onSubmit={handleEdit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -193,8 +205,8 @@ function Transacciones() {
                                         onChange={e => setFormEdit({...formEdit, categoriaId: e.target.value})} required>
                                     <option value="">Seleccioná categoría</option>
                                     {categorias
-                                    .filter(c => c.tipo === formEdit.tipo)
-                                    .map(c => <option key={c.id} value={c.id}>{c.icono} {c.nombre}</option>)}
+                                        .filter(c => c.tipo === formEdit.tipo)
+                                        .map(c => <option key={c.id} value={c.id}>{c.icono} {c.nombre}</option>)}
                                 </select>
                             </div>
                             <div>
@@ -226,7 +238,7 @@ function Transacciones() {
                                     Guardar
                                 </button>
                                 <button type="button" onClick={() => setEditando(null)}
-                                        className="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg transition">
+                                        className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg transition">
                                     Cancelar
                                 </button>
                             </div>
@@ -234,14 +246,15 @@ function Transacciones() {
                     </div>
                 )}
 
-                <div className="flex items-center gap-4 mb-6">
+                {/* Navegación mes/año */}
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-4 sm:mb-6">
                     <button onClick={mesAnterior} className="bg-gray-800 hover:bg-gray-700 p-2 rounded-lg transition">
                         <ChevronLeft size={20} />
                     </button>
-                    <select className="bg-gray-800 text-white px-3 py-2 rounded-lg" value={mes} onChange={handleMesChange}>
+                    <select className="bg-gray-800 text-white px-2 sm:px-3 py-2 rounded-lg text-sm sm:text-base" value={mes} onChange={handleMesChange}>
                         {MESES.map((m, i) => <option key={i+1} value={i+1}>{m}</option>)}
                     </select>
-                    <select className="bg-gray-800 text-white px-3 py-2 rounded-lg" value={anio} onChange={handleAnioChange}>
+                    <select className="bg-gray-800 text-white px-2 sm:px-3 py-2 rounded-lg text-sm sm:text-base" value={anio} onChange={handleAnioChange}>
                         {[2023, 2024, 2025, 2026, 2027].map(a => <option key={a} value={a}>{a}</option>)}
                     </select>
                     <button onClick={mesSiguiente} className="bg-gray-800 hover:bg-gray-700 p-2 rounded-lg transition">
@@ -249,42 +262,59 @@ function Transacciones() {
                     </button>
                 </div>
 
+                {/* Filtros */}
+                <div className="flex flex-wrap gap-2 sm:gap-4 mb-4 sm:mb-6">
+                    <select className="bg-gray-800 text-white px-2 sm:px-3 py-2 rounded-lg text-sm sm:text-base flex-1 sm:flex-none" value={filtroTipo}
+                            onChange={e => setFiltroTipo(e.target.value)}>
+                        <option value="TODOS">Todos</option>
+                        <option value="GASTO">Gastos</option>
+                        <option value="INGRESO">Ingresos</option>
+                    </select>
+                    <select className="bg-gray-800 text-white px-2 sm:px-3 py-2 rounded-lg text-sm sm:text-base flex-1 sm:flex-none" value={filtroCategoriaId}
+                            onChange={e => setFiltroCategoriaId(e.target.value)}>
+                        <option value="">Todas las categorías</option>
+                        {categorias.map(c => (
+                            <option key={c.id} value={c.id}>{c.icono} {c.nombre}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Resumen */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
                     <div className="bg-gray-900 rounded-xl p-4">
                         <p className="text-sm text-gray-400">Ingresos</p>
-                        <p className="text-xl font-bold text-emerald-400">+₡{totalIngresos.toLocaleString()}</p>
+                        <p className="text-lg sm:text-xl font-bold text-emerald-400">+₡{totalIngresos.toLocaleString()}</p>
                     </div>
                     <div className="bg-gray-900 rounded-xl p-4">
                         <p className="text-sm text-gray-400">Gastos</p>
-                        <p className="text-xl font-bold text-red-400">-₡{totalGastos.toLocaleString()}</p>
+                        <p className="text-lg sm:text-xl font-bold text-red-400">-₡{totalGastos.toLocaleString()}</p>
                     </div>
                 </div>
 
+                {/* Lista */}
                 <div className="flex flex-col gap-3">
-                    {transacciones.length === 0 && <p className="text-gray-400">No hay transacciones en este mes.</p>}
-                    {transacciones.map(t => (
-                        <div key={t.id} className="bg-gray-900 rounded-xl px-5 py-4 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
+                    {transaccionesFiltradas.length === 0 && <p className="text-gray-400">No hay transacciones con estos filtros.</p>}
+                    {transaccionesFiltradas.map(t => (
+                        <div key={t.id} className="bg-gray-900 rounded-xl px-4 sm:px-5 py-4 flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3 min-w-0">
                                 {t.tipo === 'GASTO'
-                                    ? <ArrowDownCircle size={24} className="text-red-400" />
-                                    : <ArrowUpCircle size={24} className="text-emerald-400" />}
-                                <div>
-                                    <p className="font-semibold">
+                                    ? <ArrowDownCircle size={22} className="text-red-400 shrink-0" />
+                                    : <ArrowUpCircle size={22} className="text-emerald-400 shrink-0" />}
+                                <div className="min-w-0">
+                                    <p className="font-semibold truncate">
                                         {categorias.find(c => c.id === t.categoriaId)?.icono} {categorias.find(c => c.id === t.categoriaId)?.nombre || 'Sin categoría'}
                                     </p>
-                                    <p className="text-sm text-gray-400">{t.descripcion || 'Sin descripción'} · {t.fecha}</p>
+                                    <p className="text-xs sm:text-sm text-gray-400 truncate">{t.descripcion || 'Sin descripción'} · {t.fecha}</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <p className={`text-lg font-bold ${t.tipo === 'GASTO' ? 'text-red-400' : 'text-emerald-400'}`}>
-                                    {t.tipo === 'GASTO' ? '-' : '+'} ₡{parseFloat(t.monto).toLocaleString()}
+                            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                                <p className={`text-base sm:text-lg font-bold ${t.tipo === 'GASTO' ? 'text-red-400' : 'text-emerald-400'}`}>
+                                    {t.tipo === 'GASTO' ? '-' : '+'}₡{parseFloat(t.monto).toLocaleString()}
                                 </p>
-                                <button onClick={() => abrirEditar(t)}
-                                        className="text-emerald-400 hover:text-emerald-300 transition">
+                                <button onClick={() => abrirEditar(t)} className="text-emerald-400 hover:text-emerald-300 transition">
                                     <Pencil size={16} />
                                 </button>
-                                <button onClick={() => eliminar(t.id)}
-                                        className="text-red-400 hover:text-red-300 transition">
+                                <button onClick={() => eliminar(t.id)} className="text-red-400 hover:text-red-300 transition">
                                     <Trash2 size={16} />
                                 </button>
                             </div>

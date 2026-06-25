@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import api from '../api/api'
-import { LogIn, Loader2 } from 'lucide-react'
+import { LogIn } from 'lucide-react'
 
 function Login() {
     const [email, setEmail] = useState('')

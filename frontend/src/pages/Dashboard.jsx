@@ -80,10 +80,10 @@ function Dashboard() {
 
                 <div className={`bg-gradient-to-r ${claseFondoBalance(totalBalance)} rounded-2xl p-6 mb-8`}>
                     <p className="text-emerald-100 text-sm mb-1">Balance total</p>
-                    <p className="text-4xl font-bold">₡ {totalBalance.toLocaleString()}</p>
+                    <p className="text-3xl sm:text-4xl font-bold">₡ {totalBalance.toLocaleString()}</p>
                 </div>
 
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                     <h2 className="text-xl font-semibold">Mis Cuentas</h2>
                     <button
                         onClick={() => setMostrarForm(!mostrarForm)}
@@ -185,7 +185,7 @@ function Dashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {cuentas.length === 0 && <p className="text-gray-400">No tenés cuentas todavía.</p>}
                     {cuentas.map(c => (
-                        <div key={c.id} className="bg-gray-900 rounded-xl p-5 flex items-center justify-between">
+                        <div key={c.id} className="bg-gray-900 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
                                 <div className={`${claseIconoBalance(parseFloat(c.balance))} p-2 rounded-lg`}>
                                     <Wallet size={20} />
@@ -196,7 +196,7 @@ function Dashboard() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
-                                <p className="text-lg font-bold text-emerald-400">
+                                <p className={`text-lg font-bold ${claseTextoBalance(parseFloat(c.balance))}`}>
                                     {parseFloat(c.balance).toLocaleString()}
                                 </p>
                                 {/*<button onClick={() => abrirEditar(c)}*/}
