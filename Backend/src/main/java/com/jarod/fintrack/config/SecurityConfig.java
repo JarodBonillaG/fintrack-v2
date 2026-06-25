@@ -60,7 +60,10 @@ public class SecurityConfig {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedOrigins(List.of(
                             "http://localhost:5173",
-                            "https://fintrack-v2-lake.vercel.app"
+                            "https://fintrack-v2-lake.vercel.app",
+                            "capacitor://localhost",
+                            "http://localhost",
+                            "https://localhost"
                     ));
                     config.addAllowedHeader("*");
                     config.addAllowedMethod("*");
