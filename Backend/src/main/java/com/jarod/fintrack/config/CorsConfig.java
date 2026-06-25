@@ -14,6 +14,9 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedOrigin("https://fintrack-v2-lake.vercel.app");
+        config.addAllowedOrigin("capacitor://localhost");
+        config.addAllowedOrigin("http://localhost");
+        config.addAllowedOrigin("https://localhost");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
