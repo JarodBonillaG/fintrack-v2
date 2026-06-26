@@ -10,12 +10,12 @@ function Transacciones() {
     const [mostrarForm, setMostrarForm] = useState(false)
     const [form, setForm] = useState({
         cuentaId: '', categoriaId: '', monto: '',
-        tipo: 'GASTO', fecha: '', descripcion: '', esRecurrente: false
+        tipo: 'GASTO', fecha: '', descripcion: '', esRecurrente: false, frecuencia: ''
     })
     const [editando, setEditando] = useState(null)
     const [formEdit, setFormEdit] = useState({
         cuentaId: '', categoriaId: '', monto: '',
-        tipo: 'GASTO', fecha: '', descripcion: '', esRecurrente: false
+        tipo: 'GASTO', fecha: '', descripcion: '', esRecurrente: false, frecuencia: ''
     })
 
     const hoy = new Date()
@@ -64,7 +64,7 @@ function Transacciones() {
         e.preventDefault()
         await api.post('/api/transacciones', { ...form, monto: parseFloat(form.monto) })
         fetchTransacciones(mes, anio)
-        setForm({ cuentaId: '', categoriaId: '', monto: '', tipo: 'GASTO', fecha: '', descripcion: '', esRecurrente: false })
+        setForm({ cuentaId: '', categoriaId: '', monto: '', tipo: 'GASTO', fecha: '', descripcion: '', esRecurrente: false, frecuencia: '' })
         setMostrarForm(false)
     }
 
@@ -82,7 +82,8 @@ function Transacciones() {
             tipo: t.tipo,
             fecha: t.fecha,
             descripcion: t.descripcion || '',
-            esRecurrente: t.esRecurrente
+            esRecurrente: t.esRecurrente,
+            frecuencia: t.frecuencia || ''
         })
     }
 
@@ -172,6 +173,27 @@ function Transacciones() {
                                 <input type="text" className={inputClass} placeholder="Opcional"
                                        value={form.descripcion} onChange={e => setForm({...form, descripcion: e.target.value})} />
                             </div>
+                            <div className="md:col-span-2">
+                                <label className="flex items-center gap-2 text-sm text-gray-300">
+                                    <input type="checkbox" checked={form.esRecurrente}
+                                           onChange={e => setForm({...form, esRecurrente: e.target.checked, frecuencia: e.target.checked ? form.frecuencia : ''})}
+                                           className="w-4 h-4" />
+                                    ¿Es recurrente?
+                                </label>
+                            </div>
+                            {form.esRecurrente && (
+                                <div>
+                                    <label className={labelClass}>Frecuencia</label>
+                                    <select className={inputClass} value={form.frecuencia}
+                                            onChange={e => setForm({...form, frecuencia: e.target.value})} required>
+                                        <option value="">Seleccioná frecuencia</option>
+                                        <option value="DIARIA">Diaria</option>
+                                        <option value="SEMANAL">Semanal</option>
+                                        <option value="MENSUAL">Mensual</option>
+                                        <option value="ANUAL">Anual</option>
+                                    </select>
+                                </div>
+                            )}
                             <div className="md:col-span-2 flex gap-3">
                                 <button type="submit"
                                         className="bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded-lg transition font-semibold">
@@ -232,6 +254,27 @@ function Transacciones() {
                                 <input type="text" className={inputClass} placeholder="Opcional"
                                        value={formEdit.descripcion} onChange={e => setFormEdit({...formEdit, descripcion: e.target.value})} />
                             </div>
+                            <div className="md:col-span-2">
+                                <label className="flex items-center gap-2 text-sm text-gray-300">
+                                    <input type="checkbox" checked={formEdit.esRecurrente}
+                                           onChange={e => setFormEdit({...formEdit, esRecurrente: e.target.checked, frecuencia: e.target.checked ? formEdit.frecuencia : ''})}
+                                           className="w-4 h-4" />
+                                    ¿Es recurrente?
+                                </label>
+                            </div>
+                            {formEdit.esRecurrente && (
+                                <div>
+                                    <label className={labelClass}>Frecuencia</label>
+                                    <select className={inputClass} value={formEdit.frecuencia}
+                                            onChange={e => setFormEdit({...formEdit, frecuencia: e.target.value})} required>
+                                        <option value="">Seleccioná frecuencia</option>
+                                        <option value="DIARIA">Diaria</option>
+                                        <option value="SEMANAL">Semanal</option>
+                                        <option value="MENSUAL">Mensual</option>
+                                        <option value="ANUAL">Anual</option>
+                                    </select>
+                                </div>
+                            )}
                             <div className="md:col-span-2 flex gap-3">
                                 <button type="submit"
                                         className="bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded-lg transition font-semibold">
