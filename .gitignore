@@ -2,6 +2,7 @@
 .env
 *.env
 !example.env
+node_modules/
 
 # Backend
 Backend/target/
