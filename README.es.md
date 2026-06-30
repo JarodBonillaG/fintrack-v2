@@ -132,6 +132,15 @@ docker-compose up --build
 
 > **Nota:** El backend está en el plan gratuito de Render. Si la primera solicitud tarda unos segundos, es el servidor despertando desde inactivo.
 
+### 🔑 Cuenta de prueba
+
+| Campo | Valor |
+|---|---|
+| Email | prueba@fintrack.com |
+| Contraseña | fintrack123 |
+
+> El servidor puede tardar hasta un minuto en despertar en la primera carga (hosting gratuito).
+
 ---
 
 ## 👨‍💻 Autor

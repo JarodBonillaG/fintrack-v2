@@ -132,6 +132,15 @@ docker-compose up --build
 
 > **Note:** The backend is hosted on Render's free plan. If the first request takes a few seconds, that's the server spinning up from idle.
 
+### 🔑 Test account
+
+| Field | Value |
+|---|---|
+| Email | prueba@fintrack.com |
+| Password | fintrack123 |
+
+> The server may take up to a minute to wake up on first load (free hosting).
+
 ---
 
 ## 👨‍💻 Author
