@@ -5,6 +5,7 @@ const api = axios.create({
 })
 
 api.interceptors.request.use(config => {
+    if (config.skipAuth) return config
     const token = localStorage.getItem('token')
     if (token) {
         config.headers.Authorization = `Bearer ${token}`
@@ -15,7 +16,7 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(
     response => response,
     error => {
-        if (error.response?.status === 401 || error.response?.status === 403) {
+        if (!error.config?.skipAuth && (error.response?.status === 401 || error.response?.status === 403)) {
             localStorage.removeItem('token')
             window.location.href = '/'
         }
