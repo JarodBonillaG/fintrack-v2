@@ -148,5 +148,5 @@ docker-compose up --build
 **Jarod Bonilla Granados**
 Systems Engineering Student — Universidad Nacional de Costa Rica (UNA)
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-jarod--bonilla--granados-0077B5?style=flat&logo=linkedin)](https://linkedin.com/in/jarod-bonilla-granados-70b94b254)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-jarod--bonilla--granados-0077B5?style=flat&logo=linkedin)](https://www.linkedin.com/in/jarod-bonilla-granados/)
 [![GitHub](https://img.shields.io/badge/GitHub-JarodBonillaG-181717?style=flat&logo=github)](https://github.com/JarodBonillaG)
